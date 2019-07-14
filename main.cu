@@ -159,37 +159,37 @@ public:
     this->c2.saveMM(c2);
   }
 
-  __device__ __forceinline__ GpuFq3 operator*(const GpuFq3 &other) const {
-    GpuFq c0_c0 = this->c0 * other.c0;
-    GpuFq c0_c1 = this->c0 * other.c1;
-    GpuFq c0_c2 = this->c0 * other.c2;
+  // __device__ __forceinline__ GpuFq3 operator*(const GpuFq3 &other) const {
+  //   GpuFq c0_c0 = this->c0 * other.c0;
+  //   GpuFq c0_c1 = this->c0 * other.c1;
+  //   GpuFq c0_c2 = this->c0 * other.c2;
 
-    GpuFq c1_c0 = this->c1 * other.c0;
-    GpuFq c1_c1 = this->c1 * other.c1;
-    GpuFq c1_c2 = this->c1 * other.c2;
+  //   GpuFq c1_c0 = this->c1 * other.c0;
+  //   GpuFq c1_c1 = this->c1 * other.c1;
+  //   GpuFq c1_c2 = this->c1 * other.c2;
     
-    GpuFq c2_c0 = this->c2 * other.c0;
-    GpuFq c2_c1 = this->c2 * other.c1;
-    GpuFq c2_c2 = this->c2 * other.c2;
+  //   GpuFq c2_c0 = this->c2 * other.c0;
+  //   GpuFq c2_c1 = this->c2 * other.c1;
+  //   GpuFq c2_c2 = this->c2 * other.c2;
 
-    return GpuFq3(
-      c0_c0 + this->non_residue * (c1_c2 + c2_c1),
-      c0_c1 + c1_c0 + this->non_residue * c2_c2,
-      c0_c2 + c1_c1 + c2_c0,
-      this->non_residue
-    );
-  }
-  // __device__ __forceinline__ GpuFq2 operator*(const GpuFq2 &other) const {
-  //   GpuFq a0_b0 = this->c0 * other.c0;
-  //   GpuFq a1_b1 = this->c1 * other.c1;
-
-  //   GpuFq a0_plus_a1 = this->c0 + this->c1;
-  //   GpuFq b0_plus_b1 = other.c0 + other.c1;
-
-  //   GpuFq c = a0_plus_a1 * b0_plus_b1;
-
-  //   return GpuFq2(a0_b0 + a1_b1 * this->non_residue, c - a0_b0 - a1_b1, this->non_residue);
+  //   return GpuFq3(
+  //     c0_c0 + this->non_residue * (c1_c2 + c2_c1),
+  //     c0_c1 + c1_c0 + this->non_residue * c2_c2,
+  //     c0_c2 + c1_c1 + c2_c0,
+  //     this->non_residue
+  //   );
   // }
+  
+  __device__ __forceinline__ GpuFq3 operator*(const GpuFq3 &other) const {
+    const GpuFq c0_c0 = this->c0 * other.c0;
+    const GpuFq c1_c1 = this->c1 * other.c1;
+    const GpuFq c2_c2 = this->c2 * other.c2;
+
+    return GpuFq3(c0_c0 + this->non_residue * ((this->c1 + this->c2) * (other.c1 + other.c2) - c1_c1 - c2_c2),
+                  (this->c0 + this->c1) * (other.c0 + other.c1) - c0_c0 - c1_c1 + this->non_residue * c2_c2,
+                  (this->c0 + this->c2) *(other.c0 + other.c2) - c0_c0 + c1_c1 - c2_c2, 
+                  this->non_residue);
+  }
 
   __device__ __forceinline__ GpuFq3 operator+(const GpuFq3 &other) const {
     return GpuFq3(this->c0 + other.c0, this->c1 + other.c1, this->c2 + other.c2, this->non_residue);
