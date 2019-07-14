@@ -93,21 +93,21 @@ class GpuFq2 {
   typedef GpuFq<fixnum> GpuFq;
 
 private:
-  GpuFq X, Y;
+  GpuFq c0, c1;
 
   GpuFq& non_residue;
 public:
   __device__
-  GpuFq2(const GpuFq &X, const GpuFq &Y, GpuFq& non_residue) : X(X), Y(Y), non_residue(non_residue) {}
+  GpuFq2(const GpuFq &c0, const GpuFq &c1, GpuFq& non_residue) : c0(c0), c1(c1), non_residue(non_residue) {}
 
-  __device__ __forceinline__ void save(fixnum& dataX, fixnum& dataY) {
-    this->X.save(dataX);
-    this->Y.save(dataY);
+  __device__ __forceinline__ void save(fixnum& c0, fixnum& c1) {
+    this->c0.save(c0);
+    this->c1.save(c1);
   }
 
-  __device__ __forceinline__ void saveMM(fixnum& dataX, fixnum& dataY) {
-    this->X.saveMM(dataX);
-    this->Y.saveMM(dataY);
+  __device__ __forceinline__ void saveMM(fixnum& c0, fixnum& c1) {
+    this->c0.saveMM(c0);
+    this->c1.saveMM(c1);
   }
 
   // __device__ __forceinline__ GpuFq2 operator*(const GpuFq2 &other) const {
@@ -119,11 +119,11 @@ public:
   //   return GpuFq2(XX + YY * this->non_residue, YX + XY, this->non_residue);
   // }
   __device__ __forceinline__ GpuFq2 operator*(const GpuFq2 &other) const {
-    GpuFq a0_b0 = this->X * other.X;
-    GpuFq a1_b1 = this->Y * other.Y;
+    GpuFq a0_b0 = this->c0 * other.c0;
+    GpuFq a1_b1 = this->c1 * other.c1;
 
-    GpuFq a0_plus_a1 = this->X + this->Y;
-    GpuFq b0_plus_b1 = other.X + other.Y;
+    GpuFq a0_plus_a1 = this->c0 + this->c1;
+    GpuFq b0_plus_b1 = other.c0 + other.c1;
 
     GpuFq c = a0_plus_a1 * b0_plus_b1;
 
